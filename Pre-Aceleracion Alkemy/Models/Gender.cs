@@ -11,7 +11,6 @@ namespace Pre_Aceleracion_Alkemy.Models
         public int GenderID { get; set; }
         public string Name { get; set; }
         public string Image { get; set; }
-        [Required]
         public ICollection<Movie> Movies { get; set; }
     }
 }

@@ -9,12 +9,20 @@ namespace Pre_Aceleracion_Alkemy.Pre_AceleracionData
 {
     public class Pre_AceleracionDb : DbContext
     {
+        private const string Schema = "characters";
         public Pre_AceleracionDb(DbContextOptions<Pre_AceleracionDb> options) : base (options)
         {
 
         }
-        public DbSet<Movie> Movies { get; set; }
-        public DbSet<Gender> Genders { get; set; }
-        public DbSet<Character> Characters { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.HasDefaultSchema(Schema);
+        }
+
+        public DbSet<Movie> Movies { get; set; } = null;
+        public DbSet<Gender> Genders { get; set; } = null;
+        public DbSet<Character> Characters { get; set; } = null;
     }
 }

@@ -13,7 +13,9 @@ namespace Pre_Aceleracion_Alkemy.Models
         public string Title { get; set; }
         public DateTime CreationDate { get; set; }
         public int Qualification { get; set; }
-        [Required]
         public ICollection<Character> Characters { get; set; }
+        public Gender Gender { get; set; }
+        public int GenderID { get; set; }
+
     }
 }
