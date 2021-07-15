@@ -8,6 +8,6 @@ namespace Pre_Aceleracion_Alkemy.Models
 {
     public class User: IdentityUser
     {
-
+        
     }
 }

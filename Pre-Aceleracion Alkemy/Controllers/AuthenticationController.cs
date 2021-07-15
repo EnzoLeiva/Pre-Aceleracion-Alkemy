@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Pre_Aceleracion_Alkemy.Dto.Authentication;
+using Pre_Aceleracion_Alkemy.Dto.Authentificacion;
 using Pre_Aceleracion_Alkemy.Models;
 using Pre_Aceleracion_Alkemy.Models.Autentication;
 using Pre_Aceleracion_Alkemy.SendGrid;
@@ -25,12 +25,9 @@ namespace Pre_Aceleracion_Alkemy.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AuthenticationController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly JwtOptions _jwtOptions;
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly ISendGridService _sendGridService;
@@ -42,56 +39,41 @@ namespace Pre_Aceleracion_Alkemy.Controllers
             ISendGridService sendGridService)
         {
             this._userManager = userManager;
-            this._roleManager = roleManager;
-            this._jwtOptions = (JwtOptions)jwtOptions;
             this._signInManager = signInManager;
             this._configuration = configuration;
             this._sendGridService = sendGridService;
         }
+
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
-        {
-            var userExits = await _userManager.FindByNameAsync(model.Username);
-            if (userExits != null)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new AuthenticationResponseDto
-                {
-                    Status = "Error",
-                    Message = "User already exits!"
-                });
-            }
-            var user = new User() 
-            {
-                Email = model.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new AuthenticationResponseDto
-                {
-                    Status = "Error",
-                    Message = "User could not be created!"
-                });
-            }
-            await _sendGridService.SendEmail(model);
-            return Ok(new AuthenticationResponseDto { Status = "Success", Message = "User created successfully!"});
-        }
-        //[HttpPost]
-        //[Route("register-admin")]
-        //public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
-        //{
-
-        //}
-        [HttpPost]
-        [Route("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Register([FromBody] UserInfo model)
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, true);
+                var user = new User { UserName = model.User_Name, Email = model.Email };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    await _sendGridService.SendEmail(model);
+                    return BuildToken(model);
+                }
+                else
+                {
+                    return BadRequest("User_name or password invalid");
+                }
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+        }
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody] UserInfo model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(model.User_Name, model.Password, true, true);
                 if (result.Succeeded)
                 {
                     return BuildToken(model);
@@ -107,26 +89,29 @@ namespace Pre_Aceleracion_Alkemy.Controllers
                 return BadRequest(ModelState);
             }
         }
-        private IActionResult BuildToken(LoginModel model)
+
+        private IActionResult BuildToken(UserInfo user)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.UniqueName, model.Username),
-                new Claim("miValor", "Lo que yo quiera"),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.User_Name),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["LLave-Re-Secreta"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiration = DateTime.UtcNow.AddDays(7);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SecretKey"]));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var expiration = DateTime.UtcNow.AddHours(1);
 
             JwtSecurityToken token = new JwtSecurityToken(
-                issuer: "yourdomain.com",
-                audience: "yourdomain.com",
+
+                issuer: "Disney.com",
+                audience: "Disneyy.com",
                 claims: claims,
                 expires: expiration,
-                signingCredentials: creds);
+                signingCredentials: credentials);
 
-            return Ok(new 
+            return Ok(new
             {
                 token = new JwtSecurityTokenHandler().WriteToken(token),
                 expiration = expiration

@@ -1,4 +1,6 @@
-﻿using Pre_Aceleracion_Alkemy.Models.Autentication;
+﻿using Pre_Aceleracion_Alkemy.Dto.Authentificacion;
+using Pre_Aceleracion_Alkemy.Models;
+using Pre_Aceleracion_Alkemy.Models.Autentication;
 using SendGrid;
 using System;
 using System.Collections.Generic;
@@ -9,6 +11,6 @@ namespace Pre_Aceleracion_Alkemy.SendGrid
 {
     public interface ISendGridService
     {
-        Task SendEmail(RegisterModel user);
+        Task SendEmail(UserInfo user);
     }
 }

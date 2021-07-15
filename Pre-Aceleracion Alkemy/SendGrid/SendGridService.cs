@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Pre_Aceleracion_Alkemy.Dto.Authentificacion;
+using Pre_Aceleracion_Alkemy.Models;
 using Pre_Aceleracion_Alkemy.Models.Autentication;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -20,7 +22,7 @@ namespace Pre_Aceleracion_Alkemy.SendGrid
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task SendEmail(RegisterModel user)
+        public async Task SendEmail(UserInfo user)
         {
             var apiKey = _configuration.GetSection("SENDGRID_API_KEY").Value;
             var client = new SendGridClient(apiKey);
@@ -28,11 +30,11 @@ namespace Pre_Aceleracion_Alkemy.SendGrid
             var to = new EmailAddress(user.Email);
 
             var htmlContent = "";
-            var textContent = ($"Welcome!! Your registration on the platform has been successful your user is {user.Username} and your password {user.Password}");
+            var textContent = ($"Welcome!! Your registration on the platform has been successful your user is {user.User_Name} and your password {user.Password}");
 
             try
             {
-                var message = await Task.Run(() => MailHelper.CreateSingleEmail(from, to, user.Subject, textContent, htmlContent));
+                var message = await Task.Run(() => MailHelper.CreateSingleEmail(from, to, user.User_Name, textContent, htmlContent));
                 var response = await client.SendEmailAsync(message);
             }
             catch (Exception)

@@ -65,9 +65,10 @@ namespace Pre_Aceleracion_Alkemy.Controllers
         [HttpPut("editMovie")]
         public async Task<IActionResult> EditMovie(string title, MovieResponseDto dto)
         {
-            if (title != dto.Title)
+            var checker = await _context.Movies.FirstOrDefaultAsync(x => x.Title == title);
+            if (checker.Title != title)
             {
-                return BadRequest($"{dto.Title} does not exist");
+                return BadRequest($"{title} does not exist");
             }
             _context.Entry(dto).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -138,39 +139,25 @@ namespace Pre_Aceleracion_Alkemy.Controllers
         [Route("getForGenderID")]
         public IActionResult GetMovieForGenderID(int id)
         {
-            var listCharacters = _context.Movies.ToList();
+            var listMovies = _context.Movies.ToList();
             if (id == 0)
             {
-                listCharacters = _context.Movies.ToList();
+                listMovies = _context.Movies.ToList();
             }
             else
             {
-                listCharacters = _context.Movies.Where(x => x.GenderID == id).ToList();
+                listMovies = _context.Movies.Where(x => x.GenderID == id).ToList();
             }
-            return Ok(listCharacters);
+            return Ok(listMovies);
         }
 
         [HttpGet]
-        [Route("getForMovieID")]
-        public IActionResult GetCharacterForMovieID(int movieId)
+        [Route("getAsc-Desc")]
+        public IActionResult GetMovieAscDesc()
         {
-            var listCharacters = _context.Characters.ToList();
-            var listMovies = _context.Movies.ToList();
-            if (movieId == 0)
-            {
-                listCharacters = _context.Characters.ToList();
-            }
-            else
-            {
-                foreach (var m in listMovies)
-                {
-                    if (movieId == m.MovieID)
-                    {
-                        m.Characters = listCharacters;
-                    }
-                }
-            }
-            return Ok(listCharacters);
+            var listMovies =  _context.Movies.OrderByDescending(x => x.MovieID).ToList();
+           
+            return Ok(listMovies);
         }
 
     }
