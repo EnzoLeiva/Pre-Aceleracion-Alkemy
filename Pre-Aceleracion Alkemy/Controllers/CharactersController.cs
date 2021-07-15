@@ -23,7 +23,7 @@ namespace Pre_Aceleracion_Alkemy.Controllers
         }
         [HttpPost]
         [Route("createCharacter")]
-        public async Task<IActionResult> CreateCharacter(CharacterResponseDto dto)
+        public async Task<IActionResult> Create(CharacterResponseDto dto)
         {
             var checker = await _context.Characters.FirstOrDefaultAsync(x => x.Name == dto.Name);
             if (checker != null)
@@ -52,44 +52,32 @@ namespace Pre_Aceleracion_Alkemy.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [Route("deleteCharacter")]
-        public async Task<IActionResult> DeleteCharacter(string name)
+        [HttpPut("editCharacter")]
+        public async Task<IActionResult> Edit(string name, CharacterDto dto)
+        {
+            if (name != dto.Name)
+            {
+                return BadRequest($"{dto.Name} does not exist");
+            }
+            _context.Entry(dto).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("deleteCharacter")]
+        public async Task<IActionResult> Delete(string name)
         {
             var checker = await _context.Characters.FirstOrDefaultAsync(x => x.Name == name);
             if (checker != null)
             {
                 _context.Characters.Remove(checker);
-                await _context.SaveChangesAsync();
             }
             else
             {
                 return BadRequest($"{name} character cannot be removed because he does not exist");
             }
             await _context.SaveChangesAsync();
-            return Ok();
-        }
-
-        [HttpPost]
-        [Route("editCharacter")]
-        public async Task<IActionResult> EditCharacter(CharacterResponseDto dto)
-        {
-            var checker = await _context.Characters.FirstOrDefaultAsync(x => x.Name == dto.Name);
-            if (checker != null)
-            {
-                checker.Name = dto.Name;
-                checker.Age = dto.Age;
-                checker.Story = dto.Story;
-                checker.Image = dto.Image;
-                checker.Weight = dto.Weight;
-            }
-            else
-            {
-                return BadRequest($"{dto.Name} does not exist");
-            }
-            await _context.SaveChangesAsync();
-            return Ok();
-
+            return NoContent();
         }
 
         [HttpGet]
@@ -111,8 +99,16 @@ namespace Pre_Aceleracion_Alkemy.Controllers
         }
 
         [HttpGet]
+        [Route("detailCharacters")]
+        public IActionResult DetailCharacters()
+        {
+            var listCharacters = _context.Characters.ToList();
+            return Ok(listCharacters);
+        }
+
+        [HttpGet]
         [Route("getForName")]
-        public IActionResult GetCharacterForName(string name)
+        public IActionResult ForName(string name)
         {
             var listCharacters = _context.Characters.ToList();
             if (name == null)
@@ -128,7 +124,7 @@ namespace Pre_Aceleracion_Alkemy.Controllers
 
         [HttpGet]
         [Route("getForAge")]
-        public IActionResult GetCharacterForAge(int age)
+        public IActionResult ForAge(int age)
         {
             var listCharacters = _context.Characters.ToList();
             if (age == 0)
@@ -144,7 +140,7 @@ namespace Pre_Aceleracion_Alkemy.Controllers
 
         [HttpGet]
         [Route("getForMovieID")]
-        public IActionResult GetCharacterForMovieID(int movieId)
+        public IActionResult ForID(int movieId)
         {
             var listCharacters = _context.Characters.ToList();
             var listMovies = _context.Movies.ToList();

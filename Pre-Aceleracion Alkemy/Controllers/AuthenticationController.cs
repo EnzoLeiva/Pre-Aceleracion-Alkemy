@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Pre_Aceleracion_Alkemy.Dto.Authentication;
 using Pre_Aceleracion_Alkemy.Models;
 using Pre_Aceleracion_Alkemy.Models.Autentication;
+using Pre_Aceleracion_Alkemy.SendGrid;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -32,17 +33,20 @@ namespace Pre_Aceleracion_Alkemy.Controllers
         private readonly JwtOptions _jwtOptions;
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _configuration;
+        private readonly ISendGridService _sendGridService;
         public AuthenticationController(UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
             IOptions<JwtOptions> jwtOptions,
             SignInManager<User> signInManager,
-            IConfiguration configuration)
+            IConfiguration configuration, 
+            ISendGridService sendGridService)
         {
             this._userManager = userManager;
             this._roleManager = roleManager;
             this._jwtOptions = (JwtOptions)jwtOptions;
             this._signInManager = signInManager;
             this._configuration = configuration;
+            this._sendGridService = sendGridService;
         }
         [HttpPost]
         [Route("register")]
@@ -72,6 +76,7 @@ namespace Pre_Aceleracion_Alkemy.Controllers
                     Message = "User could not be created!"
                 });
             }
+            await _sendGridService.SendEmail(model);
             return Ok(new AuthenticationResponseDto { Status = "Success", Message = "User created successfully!"});
         }
         //[HttpPost]

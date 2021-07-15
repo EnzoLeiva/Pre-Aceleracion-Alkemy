@@ -10,8 +10,8 @@ using Pre_Aceleracion_Alkemy.Pre_AceleracionData;
 namespace Pre_Aceleracion_Alkemy.Migrations.User
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20210712190125_Migration2")]
-    partial class Migration2
+    [Migration("20210714203943_1")]
+    partial class _1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -19,7 +19,7 @@ namespace Pre_Aceleracion_Alkemy.Migrations.User
             modelBuilder
                 .HasDefaultSchema("users")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.7")
+                .HasAnnotation("ProductVersion", "5.0.8")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

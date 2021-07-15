@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Pre_Aceleracion_Alkemy.Models;
 using Pre_Aceleracion_Alkemy.Pre_AceleracionData;
+using Pre_Aceleracion_Alkemy.SendGrid;
+using SendGrid.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +35,8 @@ namespace Pre_Aceleracion_Alkemy
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers().AddNewtonsoftJson(options =>
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<UserContext>()
                 .AddDefaultTokenProviders();
@@ -67,6 +71,11 @@ namespace Pre_Aceleracion_Alkemy
             {
                 options.UseSqlServer(Configuration.GetConnectionString("UserContext"));
             });
+            services.AddSendGrid(options =>
+            {
+                options.ApiKey = "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";
+            });
+            services.AddScoped<ISendGridService, SendGridService>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

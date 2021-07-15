@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Pre_Aceleracion_Alkemy.Migrations
 {
-    public partial class Migration2 : Migration
+    public partial class _1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -54,7 +54,7 @@ namespace Pre_Aceleracion_Alkemy.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Qualification = table.Column<int>(type: "int", nullable: false),
-                    GenderID = table.Column<int>(type: "int", nullable: true)
+                    GenderID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,7 +65,7 @@ namespace Pre_Aceleracion_Alkemy.Migrations
                         principalSchema: "characters",
                         principalTable: "Genders",
                         principalColumn: "GenderID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,12 +94,6 @@ namespace Pre_Aceleracion_Alkemy.Migrations
                         principalColumn: "MovieID",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.InsertData(
-                schema: "characters",
-                table: "Characters",
-                columns: new[] { "CharacterID", "Age", "Image", "Name", "Story", "Weight" },
-                values: new object[] { 1, 18, null, "Mickey", null, 5 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CharacterMovie_MoviesMovieID",

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,10 +11,9 @@ namespace Pre_Aceleracion_Alkemy.Models
         public string Image { get; set; }
         public string Title { get; set; }
         public DateTime CreationDate { get; set; }
-        public int Qualification { get; set; }
-        public ICollection<Character> Characters { get; set; }
-        public Gender Gender { get; set; }
+        public int Qualification { get; set; } 
         public int GenderID { get; set; }
-
+        public virtual Gender Gender { get; set; }
+        public ICollection<Character> Characters { get; set; } = new List<Character>();
     }
 }

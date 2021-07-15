@@ -10,5 +10,6 @@ namespace Pre_Aceleracion_Alkemy.Models.Autentication
         public string Username { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        public string Subject { get; set; }
     }
 }

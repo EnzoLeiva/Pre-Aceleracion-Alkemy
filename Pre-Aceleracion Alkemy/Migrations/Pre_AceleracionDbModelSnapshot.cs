@@ -17,7 +17,7 @@ namespace Pre_Aceleracion_Alkemy.Migrations
             modelBuilder
                 .HasDefaultSchema("characters")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.7")
+                .HasAnnotation("ProductVersion", "5.0.8")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("CharacterMovie", b =>
@@ -51,7 +51,7 @@ namespace Pre_Aceleracion_Alkemy.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("History")
+                    b.Property<string>("Story")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Weight")
@@ -60,15 +60,6 @@ namespace Pre_Aceleracion_Alkemy.Migrations
                     b.HasKey("CharacterID");
 
                     b.ToTable("Characters");
-
-                    b.HasData(
-                        new
-                        {
-                            CharacterID = 1,
-                            Age = 18,
-                            Name = "Mickey",
-                            Weight = 5
-                        });
                 });
 
             modelBuilder.Entity("Pre_Aceleracion_Alkemy.Models.Gender", b =>
@@ -99,7 +90,7 @@ namespace Pre_Aceleracion_Alkemy.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("GenderID")
+                    b.Property<int>("GenderID")
                         .HasColumnType("int");
 
                     b.Property<string>("Image")
@@ -137,7 +128,9 @@ namespace Pre_Aceleracion_Alkemy.Migrations
                 {
                     b.HasOne("Pre_Aceleracion_Alkemy.Models.Gender", "Gender")
                         .WithMany("Movies")
-                        .HasForeignKey("GenderID");
+                        .HasForeignKey("GenderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Gender");
                 });

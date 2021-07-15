@@ -14,6 +14,6 @@ namespace Pre_Aceleracion_Alkemy.Models
         public int Age { get; set; }
         public int Weight { get; set; }
         public string Story { get; set; }
-        public ICollection<Movie> Movies { get; set; }
+        public ICollection<Movie> Movies { get; set; } = new List<Movie>();
     }
 }
